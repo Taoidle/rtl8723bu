@@ -56,8 +56,9 @@ CONFIG_PNO_SUPPORT = n
 CONFIG_PNO_SET_DEBUG = n
 CONFIG_AP_WOWLAN = n
 ###################### Platform Related #######################
-CONFIG_PLATFORM_I386_PC = y
+CONFIG_PLATFORM_I386_PC = n
 CONFIG_PLATFORM_FS_MX61 = n
+CONFIG_PLATFORM_ARM_SUNXI = y
 ###############################################################
 
 CONFIG_DRVEXT_MODULE = n
@@ -275,6 +276,19 @@ ARCH := arm
 KSRC ?= $(KERNEL_SRC)
 MODDESTDIR := kernel/drivers/net/wireless/
 LICENSE = "GPLv2"
+endif
+
+ifeq ($(CONFIG_PLATFORM_ARM_SUNXI), y)
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211
+EXTRA_CFLAGS += -DRTW_USE_CFG80211_STA_EVENT # only enable when kernel >= 3.2
+EXTRA_CFLAGS += -DCONFIG_P2P_IPS
+ARCH := arm
+CROSS_COMPILE := arm-linux-gnueabihf-
+KVER := $(shell uname -r)
+KSRC ?= /lib/modules/$(KVER)/build
+MODULE_NAME := 8723bu
+MODDESTDIR := /lib/modules/$(KVER)/kernel/drivers/net/wireless/
 endif
 
 ifneq ($(USER_MODULE_NAME),)
